@@ -14,25 +14,25 @@ public class TopicService implements Service {
     @Override
     public Resp process(Req req) {
         String text = "";
-        String status = null;
+        String status = "501";
+        var map = topic.get(req.getSourceName());
         if (POST.equals(req.httpRequestType())) {
-            if (topic.get(req.getSourceName()) == null) {
+            if (map == null) {
                 status = EMPTY_STATUS;
             } else {
-                for (ConcurrentLinkedQueue<String> value : topic.get(req.getSourceName()).values()) {
+                for (ConcurrentLinkedQueue<String> value : map.values()) {
                     value.add(req.getParam());
                 }
                 status = OK_STATUS;
             }
         } else if (GET.equals(req.httpRequestType())) {
-            if (topic.get(req.getSourceName()) == null
-                    || (topic.get(req.getSourceName()).get(req.getParam()) == null)) {
+            if (map == null || map.get(req.getParam()) == null) {
                 topic.putIfAbsent(req.getSourceName(), new ConcurrentHashMap<>());
                 topic.get(req.getSourceName()).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>());
                 status = EMPTY_STATUS;
 
             } else {
-                text = topic.get(req.getSourceName()).get(req.getParam()).poll();
+                text = map.get(req.getParam()).poll();
                 status = OK_STATUS;
             }
         }

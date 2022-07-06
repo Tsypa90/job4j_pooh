@@ -13,18 +13,17 @@ public class QueueService implements Service {
     @Override
     public Resp process(Req req) {
         String text = "";
-        String status = null;
+        String status = "501";
+        var linkedQueue = queue.get(req.getSourceName());
         if (GET.equals(req.httpRequestType())) {
-            if (queue.get(req.getSourceName()) == null || queue.get(req.getSourceName()).isEmpty()) {
+            if (linkedQueue == null || linkedQueue.isEmpty()) {
                 status = EMPTY_STATUS;
             } else {
-                text = queue.get(req.getSourceName()).poll();
+                text = linkedQueue.poll();
                 status = OK_STATUS;
             }
         } else if (POST.equals(req.httpRequestType())) {
-            if (queue.get(req.getSourceName()) == null) {
-                queue.putIfAbsent(req.getSourceName(), new ConcurrentLinkedQueue<>());
-            }
+            queue.putIfAbsent(req.getSourceName(), new ConcurrentLinkedQueue<>());
             text = req.getParam();
             queue.get(req.getSourceName()).add(text);
             status = OK_STATUS;

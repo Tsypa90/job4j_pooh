@@ -22,7 +22,6 @@ public class Req {
         String poohMode = null;
         String httpRequest;
         var args = content.split(System.lineSeparator());
-        String[] request = new String[2];
         var resp = args[0].split(" ");
         httpRequest = resp[0];
         if (POST.equals(httpRequest)) {
