@@ -26,16 +26,15 @@ public class TopicService implements Service {
                 status = OK_STATUS;
             }
         } else if (GET.equals(req.httpRequestType())) {
-            if (map == null || map.get(req.getParam()) == null) {
                 topic.putIfAbsent(req.getSourceName(), new ConcurrentHashMap<>());
                 topic.get(req.getSourceName()).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>());
+                var linkedQueue = topic.get(req.getSourceName()).get(req.getParam());
                 status = EMPTY_STATUS;
-
-            } else {
-                text = map.get(req.getParam()).poll();
-                status = OK_STATUS;
+                if (!linkedQueue.isEmpty()) {
+                    text = topic.get(req.getSourceName()).get(req.getParam()).poll();
+                    status = OK_STATUS;
+                }
             }
-        }
         return new Resp(text, status);
     }
 }
