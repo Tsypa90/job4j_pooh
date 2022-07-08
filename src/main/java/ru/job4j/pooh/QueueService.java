@@ -16,9 +16,8 @@ public class QueueService implements Service {
         String status = "501";
         var linkedQueue = queue.get(req.getSourceName());
         if (GET.equals(req.httpRequestType())) {
-            if (linkedQueue == null || linkedQueue.isEmpty()) {
-                status = EMPTY_STATUS;
-            } else {
+            status = EMPTY_STATUS;
+            if (linkedQueue != null && !linkedQueue.isEmpty()) {
                 text = linkedQueue.poll();
                 status = OK_STATUS;
             }

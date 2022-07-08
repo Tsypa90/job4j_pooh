@@ -17,9 +17,8 @@ public class TopicService implements Service {
         String status = "501";
         var map = topic.get(req.getSourceName());
         if (POST.equals(req.httpRequestType())) {
-            if (map == null) {
-                status = EMPTY_STATUS;
-            } else {
+            status = EMPTY_STATUS;
+            if (map != null) {
                 for (ConcurrentLinkedQueue<String> value : map.values()) {
                     value.add(req.getParam());
                 }
@@ -30,8 +29,8 @@ public class TopicService implements Service {
                 topic.get(req.getSourceName()).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>());
                 var linkedQueue = topic.get(req.getSourceName()).get(req.getParam());
                 status = EMPTY_STATUS;
-                if (!linkedQueue.isEmpty()) {
-                    text = topic.get(req.getSourceName()).get(req.getParam()).poll();
+                text = linkedQueue.poll();
+                if (text != null) {
                     status = OK_STATUS;
                 }
             }

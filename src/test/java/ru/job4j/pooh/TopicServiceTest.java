@@ -21,7 +21,7 @@ public class TopicServiceTest {
         Resp result2 = topicService.process(
                 new Req("GET", "topic", "weather", paramForSubscriber2));
         assertThat(result1.text(), is("temperature=18"));
-        assertThat(result2.text(), is(""));
+        assertNull(result2.text());
     }
 
     @Test
@@ -32,5 +32,18 @@ public class TopicServiceTest {
                 new Req("POST", "topic", "weather", paramForPublisher));
         assertThat(result.text(), is(""));
         assertThat(result.status(), is("204"));
+    }
+
+    @Test
+    public void whenPostAndHaveSubscribers() {
+        TopicService topic = new TopicService();
+        String paramForPublisher = "temperature=18";
+        String paramForSubscriber1 = "client407";
+        topic.process(
+                new Req("GET", "topic", "weather", paramForSubscriber1));
+        Resp result = topic.process(
+                new Req("POST", "topic", "weather", paramForPublisher));
+        assertThat(result.text(), is(""));
+        assertThat(result.status(), is("200"));
     }
 }
