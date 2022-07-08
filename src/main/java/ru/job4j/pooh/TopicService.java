@@ -28,10 +28,11 @@ public class TopicService implements Service {
                 topic.putIfAbsent(req.getSourceName(), new ConcurrentHashMap<>());
                 topic.get(req.getSourceName()).putIfAbsent(req.getParam(), new ConcurrentLinkedQueue<>());
                 var linkedQueue = topic.get(req.getSourceName()).get(req.getParam());
-                status = EMPTY_STATUS;
+                status = OK_STATUS;
                 text = linkedQueue.poll();
-                if (text != null) {
-                    status = OK_STATUS;
+                if (text == null) {
+                    text = "";
+                    status = EMPTY_STATUS;
                 }
             }
         return new Resp(text, status);
